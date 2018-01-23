@@ -23,6 +23,8 @@ vth = sqrt(2*(C.kb*T)/(Mass));
 dt = 10e-15;
 TStop = 1000*dt;
 
+%Prob = 1 - exp(-10e-15/.2e-12);    %probbility to interact with the backgorund
+%log(1+ Prob)                       %mean free path?
 Limits = [0 len 0 wid];
 MarkerSize = 1;
 
@@ -65,6 +67,9 @@ while t < TStop
        if y(i) >= wid || y(i) <= 0
            Vy(i) = - Vy(i);
        end
+       
+       %implment probability here?
+       
        X = [xp(i) x(i)];
        Y = [yp(i) y(i)];
        plot(X,Y,'color',colorVec(i,:));
