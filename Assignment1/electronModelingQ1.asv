@@ -36,8 +36,8 @@ end
 xp = zeros(numElect);               %previous values will be used to track 
 yp = zeros(numElect);               %the trajectories of the electrons
 
-Vx(1:numElect) = vth * cos(2*pi*randn(1,numElect)); %initial velocities
-Vy(1:numElect) = vth * sin(2*pi*randn(1,numElect)); %based on the thermal velocity
+Vx(1:numElect) = vth * cos(2*pi*randn(1,numElect)); %
+Vy(1:numElect) = vth * sin(2*pi*randn(1,numElect));
 
 Vt = sqrt(Vx.*Vx + Vy.*Vy);
 tempSum = 0;
@@ -104,7 +104,7 @@ while t < TStop                     %Loop to calcualte pos, and temp
        %implment probability here?
        
        X = [xp(i) x(i)];
-       Y = [yp(i) y(i)];            %reduce this to the inside of the plot
+       Y = [yp(i) y(i)];
        if i < numVisable
            subplot(2,1,1);
            plot(X,Y,'color',colorVec(i,:));
@@ -115,7 +115,7 @@ while t < TStop                     %Loop to calcualte pos, and temp
     Temp = [prevTemp avgTemp];          %takes two points to make a line
     Time = [(t-dt) t];                  %the previous temp and the previous
     subplot(2,1,2);                     %time should line up, so t-dt is the
-    plot(Time, Temp, '-.', 'color', colorVec(1,:));%previous temp
+    plot(Time, Temp, '-.');             %previous temp
     
     %fprintf('time: %g (%5.2g %%)\n', t, t/TStop*100);
     
