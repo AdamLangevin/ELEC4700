@@ -8,8 +8,8 @@ global Vx Vy x y xp yp xi yi Vxi Vyi Collisions
 global numElect MarkerSize
 global Mass T SavePics
 
-numElect = 100;
-SavePics = 1;
+numElect = 1000;
+SavePics = 1;               %used at the end to save graphs on a 1, and not on a 0
 
 len = 200e-9;
 wid = 100e-9;
@@ -28,19 +28,19 @@ Prob = 1 - exp(-dt/.2e-12);         %probbility to interact with the backgorund
 %L = log(1 - Prob);                 %mean free path?
 %Lambda = L/diffL
 
-Limits = [0 len 0 wid];
+Limits = [0 len 0 wid];             %the drawing limits of the material simulated
 MarkerSize = 1;
 
 for i = 1:numElect                  %initialize the position of each electron
-    x(i) = rand()*len;           %inside the material. 
+    x(i) = rand()*len;              %inside the material. 
     y(i) = rand()*wid;
 end
 
 xi = x;
 yi = y;
 
-avgDistX(1:numElect) = x.*x(1:numElect);
-avgDistY(1:numElect) = y.*y(1:numElect);
+avgDistX(1:numElect) = x.*x(1:numElect);    %averaging the distance to each neibouring
+avgDistY(1:numElect) = y.*y(1:numElect);    %electron to calculate mean free path
 
 Collisions = zeros(1,numElect);
 
@@ -97,29 +97,31 @@ Temp = [300 avgTemp];
 Time = [0 t];
 plot(t, avgTemp, '-');
 
-numVisable = 10;                    %This sets the amount of visable electrons
-%colorVec = rand(numVisable,3);      %and adds different color values to each vector
+numVisable = 1;                     %This sets the amount of visable electrons
+%colorVec = rand(numVisable,3);     %and adds different color values to each vector
 colorVec = hsv(numVisable);
 tempSum = 0;                        %Reseting some values to zero to ensure
 avgTemp = 0;                        %proper calculations
 Vt = 0;
 prevTemp = 0;
 
-sumCollision = 0;
-sumCollTime = 0;
+sumCollision = 0;                   %initializing some helpers to calculate
+sumCollTime = 0;                    %the average collision time
 numColl = 0;
 
 while t < TStop                     %Loop to calcualte pos, and temp
     xp(1:numElect) = x(1:numElect);
     yp(1:numElect) = y(1:numElect);
     
-    x(1:numElect) = x(1:numElect) + (dt .* Vx(1:numElect));
-    y(1:numElect) = y(1:numElect) + (dt .* Vy(1:numElect));
+    x(1:numElect) = x(1:numElect) + (dt .* Vx(1:numElect)); %update position before the bounds check
+    y(1:numElect) = y(1:numElect) + (dt .* Vy(1:numElect)); %the bounds will rewrite this if an electron
+                                                            %is outside the
+                                                            %bounds
     
     for i=1:numElect                %Loop to calcuate the boundaries, left and 
                                     %right are periodic, the top and bottom
                                     %are reflections
-       %Boundary hit conditions
+       %Boundary conditions, not rethermalized
        if x(i) >= len
            xp(i) = 0;
            x(i) = dt * Vx(i);
@@ -147,8 +149,8 @@ while t < TStop                     %Loop to calcualte pos, and temp
        tempSum = tempSum + (Mass*Vt^2)/(2*C.kb);    %we might aswell do the temp
                                                     %cacluations
        
-       if i <= numVisable
-           figure(1);
+       if i <= numVisable                           %plot the difference in position,
+           figure(1);                               %but only a small number will show
            subplot(2,1,1);
            plot([xp(i) x(i)], [yp(i) y(i)],'color',colorVec(i,:));
        end
@@ -163,10 +165,10 @@ while t < TStop                     %Loop to calcualte pos, and temp
     
     %fprintf('time: %g (%5.2g %%)\n', t, t/TStop*100);
     
-    prevTemp = avgTemp;                 
+    prevTemp = avgTemp;                 %used to calculate the material temp
     avgTemp = 0;
     tempSum = 0;
-    pause(0.001);
+    pause(0.00001);
     t = t + dt;
 end
 
@@ -187,6 +189,7 @@ avgCollTime = sumCollTime / numColl;
 
 fprintf('Mean Free Path Calcuated: %g Avg. time between collisions: %g\n', avgTot, avgCollTime); 
 
+%save the final state of the graphs to add to the report
 if SavePics
     figure(1);
     saveas(gcf, 'ElectronsInSiliconQ2.jpg');
