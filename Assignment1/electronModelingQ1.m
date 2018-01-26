@@ -24,7 +24,7 @@ dt = 10e-15;
 TStop = 1000*dt;
 
 %Prob = 1 - exp(-10e-15/.2e-12);    %probbility to interact with the backgorund
-%log(1+ Prob)                       %mean free path?
+%Lambda = log(1+ Prob)              %mean free path?
 Limits = [0 len 0 wid];
 MarkerSize = 1;
 
@@ -59,6 +59,7 @@ title('Material Temperature');
 xlabel('Time (seconds)');
 ylabel('Temp (Kelvin)');
 hold on;
+grid on;
         
 for i = 1:numElect                  %Find the initial temp of the material
     tempSum  = tempSum + (Mass*Vt(i)^2)/(2*C.kb);
@@ -66,9 +67,9 @@ end
 avgTemp = tempSum/numElect;
 Temp = [300 avgTemp];
 Time = [0 t];
-plot(t, avgTemp, '-.');
+plot(t, avgTemp, '-');
 
-numVisable = 20;                    %This sets the amount of visable electrons
+numVisable = 10;                    %This sets the amount of visable electrons
 colorVec = hsv(numVisable + 1);     %and adds different color values to each vector
 
 tempSum = 0;                        %Reseting some values to zero to ensure
@@ -98,10 +99,11 @@ while t < TStop                     %Loop to calcualte pos, and temp
            Vy(i) = - Vy(i);
        end
        
+       %implement scattering here
+       
        Vt = sqrt(Vx(i)^2 + Vy(i)^2);                %As we loop to check bounds
        tempSum = tempSum + (Mass*Vt^2)/(2*C.kb);    %we might aswell do the temp
                                                     %cacluations
-       %implment probability here?
        
        X = [xp(i) x(i)];
        Y = [yp(i) y(i)];            %reduce this to the inside of the plot
@@ -115,7 +117,8 @@ while t < TStop                     %Loop to calcualte pos, and temp
     Temp = [prevTemp avgTemp];          %takes two points to make a line
     Time = [(t-dt) t];                  %the previous temp and the previous
     subplot(2,1,2);                     %time should line up, so t-dt is the
-    plot(Time, Temp, '-.', 'color', colorVec(1,:));%previous temp
+                                        %previous temp
+    plot(Time, Temp, '-', 'color', colorVec(1,:));
     
     %fprintf('time: %g (%5.2g %%)\n', t, t/TStop*100);
     
