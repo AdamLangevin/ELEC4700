@@ -6,8 +6,9 @@ format shorte
 global C 
 global Vx Vy x y xp yp
 global numElect MarkerSize
-global Mass T
+global Mass T SavePics
 
+SavePics = 0;
 numElect = 1000;
 
 len = 200e-9;
@@ -22,15 +23,12 @@ k = 1.381 * 10 ^-23;
 vth = sqrt(2*(C.kb*T)/(Mass));
 dt = 10e-15;
 TStop = 1000*dt;
-
-%Prob = 1 - exp(-10e-15/.2e-12);    %probbility to interact with the backgorund
-%Lambda = log(1+ Prob)              %mean free path?
 Limits = [0 len 0 wid];
 MarkerSize = 1;
 
 for i = 1:numElect                  %initialize the position of each electron
-    x(i) = rand()*200e-9;           %inside the material. 
-    y(i) = rand()*100e-9;
+    x(i) = rand()*len;           %inside the material. 
+    y(i) = rand()*wid;
 end
 
 xp = zeros(numElect);               %previous values will be used to track 
@@ -70,7 +68,7 @@ Time = [0 t];
 plot(t, avgTemp, '-');
 
 numVisable = 10;                    %This sets the amount of visable electrons
-colorVec = hsv(numVisable + 1);     %and adds different color values to each vector
+colorVec = rand(numVisable,3);      %Random color assignments
 
 tempSum = 0;                        %Reseting some values to zero to ensure
 avgTemp = 0;                        %proper calculations
@@ -98,9 +96,7 @@ while t < TStop                     %Loop to calcualte pos, and temp
        if y(i) >= wid || y(i) <= 0
            Vy(i) = - Vy(i);
        end
-       
-       %implement scattering here
-       
+              
        Vt = sqrt(Vx(i)^2 + Vy(i)^2);                %As we loop to check bounds
        tempSum = tempSum + (Mass*Vt^2)/(2*C.kb);    %we might aswell do the temp
                                                     %cacluations
@@ -129,4 +125,7 @@ while t < TStop                     %Loop to calcualte pos, and temp
     t = t + dt;
 end
 
-
+if SavePics
+    figure(1);
+    saveas(gcf, 'ElectronsInSiliconQ1.jpg');
+end
