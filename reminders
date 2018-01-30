@@ -1,3 +1,3 @@
 course website
 doe.carleton.ca/~tjs/4700.html
-
+Assignment 2: make the mesh of nodes for the FD solution changeable, ie selecting how fine or corse the generation of values is
