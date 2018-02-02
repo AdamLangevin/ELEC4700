@@ -8,7 +8,8 @@ global Vx Vy x y xp yp xi yi Vxi Vyi Collisions
 global numElect MarkerSize
 global Mass T SavePics
 
-numElect = 50;
+numElect = 10;
+numSteps = 10;
 SavePics = 1;               %used at the end to save graphs on a 1, and not on a 0
 
 len = 200e-9;
@@ -27,13 +28,12 @@ Mass = 0.26*C.Mo;
 k = 1.381 * 10 ^-23;
 vth = sqrt(2*(C.kb*T)/(Mass));      %vth = 1.8702e5
 dt = 10e-15;                        %10fs
-TStop = 1000*dt;
+TStop = numSteps*dt;
 
 Prob = 1 - exp(-dt/.2e-12);         %probbility to interact with the backgorund
-%L = log(1 - Prob);                 %mean free path?
-%Lambda = L/diffL
+fprintf("The proability to scatter is %g \n", Prob);
 
-Limits = [0 len 0 wid];             %the drawing limits of the material simulated
+Limits = [0 (len)  0 (wid)];        %the drawing limits of the material simulated
 MarkerSize = 1;
 
 for i = 1:numElect                  %initialize the position of each electron
@@ -111,7 +111,7 @@ Temp = [300 avgTemp];
 Time = [0 t];
 plot(t, avgTemp, '-');
 
-numVisable = 20;                    %This sets the amount of visable electrons
+numVisable = 5;                    %This sets the amount of visable electrons
 colorVec = hsv(numVisable);
 tempSum = 0;                        %Reseting some values to zero to ensure
 avgTemp = 0;                        %proper calculations
@@ -122,7 +122,9 @@ sumCollision = 0;                   %initializing some helpers to calculate
 sumCollTime = 0;                    %the average collision time
 numColl = 0;
 
-%rectangle('Position', []);
+subplot(2,1,1);
+rectangle('Position', [wallX 0 4e-8 4e-8]);
+rectangle('Position', [wallX wallH2 4e-8 4e-8]);
 
 while t < TStop                     %Loop to calcualte pos, and temp
     xp(1:numElect) = x(1:numElect);
@@ -142,6 +144,10 @@ while t < TStop                     %Loop to calcualte pos, and temp
            if rand() >= Prob
                xp(i) = 0;
                x(i) = dt * vth * cos(2*pi*randn());
+               Vx(i) = vth * cos(2*pi*randn());
+               if x(i) <=0 || x(i) >= len || x(i)+dt*Vx(i) >= len || x(i)+dt*Vx(i) <= 0
+                    x(i) = xp(i) +dt*Vx(i);
+               end
            else
                xp(i) = 0;
                x(i) = dt * Vx(i);
@@ -153,6 +159,10 @@ while t < TStop                     %Loop to calcualte pos, and temp
            if rand() >= Prob
                xp(i) = x(i) + len;
                x(i) = xp(i) + dt * vth * cos(2*pi*randn());
+               Vx(i) = vth*cos(2*pi*randn()); 
+               if x(i) <= 0 || x(i) >= len || x(i)+dt*Vx(i) >= len || x(i)+dt*Vx(i) <= 0
+                   x(i) = xp(i) + dt*Vx(i);
+               end
            else
                xp(i) =  xp(i) + len;
                x(i) =  xp(i) + dt*Vx(i);
@@ -162,18 +172,33 @@ while t < TStop                     %Loop to calcualte pos, and temp
        %Upper and lower boundries
        if y(i) >= wid || y(i) <= 0
            if rand() >= Prob
-               Vy(i) = - vth * sin(2*pi*randn()); %look at xp/yp
+               Vy(i) = - vth * sin(2*pi*randn());
+               y(i) = yp(i);
+               yp(i) = y(i) - dt*Vy(i);
+               if  y(i) >= wid || y(i) <= 0 || y(i) +dt*Vy(i) >= wid || y(i) +dt*Vy(i) <= 0
+                   Vy(i) = -Vy(i);
+                   y(i) = yp(i);
+                   yp(i) = y(i) - dt*Vy(i);
+               end
            else
-               Vy(i) = - Vy(i);
+               Vy(i) = -Vy(i);
+               y(i) = yp(i);
+               yp(i) = y(i) - dt*Vy(i);
            end
        end
        
        %left side of the boxes
        if ((y(i) <= 4e-8 || y(i) >= 6e-8) && x(i)+dt*Vx(i) >= 8e-8 && x(i) <= 8e-8)
            if rand() >= Prob
+               xt = x(i);
                Vx(i) = - vth * cos(2*pi*randn());
+               x(i) = xp(i) + dt*Vx(i);
+               xp(i) = xt;
                if x(i) + dt*Vx(i) >= 8e-8
+                   xt = x(i);
                    Vx(i) = -Vx(i);
+                   x(i) = xp(i) + dt*Vx(i);
+                   xp(i) = xt;
                end
            else
                 Vx(i) = -Vx(i);
@@ -183,9 +208,15 @@ while t < TStop                     %Loop to calcualte pos, and temp
        %right side of the boxes
        if ((y(i) <= 4e-8 || y(i) >= 6e-8) && x(i)+dt*Vx(i) <= 12e-8 && x(i) >= 12e-8) 
            if rand() >= Prob
+               xt = x(i);
                Vx(i) = - vth * cos(2*pi*randn());
+               x(i) = xp(i) + dt*Vx(i);
+               xp(i) = xt;
                if x(i) + dt*Vx(i) <= 12e-8
+                   xt = x(i);
                    Vx(i) = -Vx(i);
+                   x(i) = xp(i) + dt*Vx(i);
+                   xp(i) = xt;
                end
            else
                Vx(i) = -Vx(i);
@@ -197,7 +228,10 @@ while t < TStop                     %Loop to calcualte pos, and temp
            if rand() >= Prob
                Vy(i) = vth * sin(2*pi*randn());
                if y(i) + dt*Vy(i) >= 6e-8 || y(i) + dt*Vy(i) <= 4e-8
+                   yt = y(i);
                    Vy(i) = -Vy(i);
+                   y(i) = yp(i) + dt*Vy(i);
+                   yp(i) = yt;
                end
            else
                 Vy(i) = - Vy(i);
@@ -241,12 +275,32 @@ while t < TStop                     %Loop to calcualte pos, and temp
     pause(0.00001);
     t = t + dt;
     hold on;
-    subplot(2,1,1);
-    rectangle('Position', [wallX 0 4e-8 4e-8]);
-    rectangle('Position', [wallX wallH2 4e-8 4e-8]);
+    
 end
 
+%electron density using 10% of total area
+xlim = 0.1 * len;
+ylim = 0.1 * wid;
+xbox = (len/xlim);
+ybox = (wid/ylim);
+c(1:xbox,1:ybox) = zeros();
+E = [x(:) y(:)];
 
+%not correct
+for i = 1:numElect
+   for j = 1:xbox
+      for k = 1:ybox
+         if E(i,1) > (j-1)*xlim && E(i,1) <= (2*j-1)*xlim && E(i,2) > (k-1)*ylim && E(i,2) <= (2*k-1)*ylim
+            c(j,k) = c(j,k) + 1;
+         end
+      end
+   end
+end
+
+figure(3);
+X = linspace(0,len,xbox);
+Y = linspace(0,wid,ybox);
+surf(X,Y,c);
 
 %mean free path calculation
 avgx = sum(Vxi - Vx);
