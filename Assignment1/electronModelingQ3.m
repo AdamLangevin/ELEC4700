@@ -40,6 +40,13 @@ for i = 1:numElect                  %initialize the position of each electron
                                     %inside the material.
     x(i) = rand()*len;               
     y(i) = rand()*wid;
+                                    
+    if x(i) >= wallX && x(i) <= wallWidth && y(i) >= wallH2
+        x(i) = x(i) + wallWidth + 1e-7;
+    end
+    if x(i) >= wallX && x(i) <= wallWidth && y(i) <= wallH1
+        x(i) = x(i) + wallWidth + 1e-7;
+    end
 end
 
 xi = x;
@@ -104,7 +111,7 @@ Temp = [300 avgTemp];
 Time = [0 t];
 plot(t, avgTemp, '-');
 
-numVisable = 50;                    %This sets the amount of visable electrons
+numVisable = 20;                    %This sets the amount of visable electrons
 colorVec = hsv(numVisable);
 tempSum = 0;                        %Reseting some values to zero to ensure
 avgTemp = 0;                        %proper calculations
@@ -130,16 +137,71 @@ while t < TStop                     %Loop to calcualte pos, and temp
                                     %right are periodic, the top and bottom
                                     %are reflections
        %Boundary conditions, not rethermalized
+       %right side boundry
        if x(i) >= len
-           xp(i) = 0;
-           x(i) = dt * Vx(i);
+           if rand() >= Prob
+               xp(i) = 0;
+               x(i) = dt * vth * cos(2*pi*randn());
+           else
+               xp(i) = 0;
+               x(i) = dt * Vx(i);
+           end
        end
+       
+       %left side boundry
        if x(i) <= 0
-           xp(i) =  xp(i) + len;
-           x(i) =  xp(i) + dt*Vx(i);
+           if rand() >= Prob
+               xp(i) = x(i) + len;
+               x(i) = xp(i) + dt * vth * cos(2*pi*randn());
+           else
+               xp(i) =  xp(i) + len;
+               x(i) =  xp(i) + dt*Vx(i);
+           end
        end   
+       
+       %Upper and lower boundries
        if y(i) >= wid || y(i) <= 0
-           Vy(i) = - Vy(i);
+           if rand() >= Prob
+               Vy(i) = - vth * sin(2*pi*randn()); %look at xp/yp
+           else
+               Vy(i) = - Vy(i);
+           end
+       end
+       
+       %left side of the boxes
+       if ((y(i) <= 4e-8 || y(i) >= 6e-8) && x(i)+dt*Vx(i) >= 8e-8 && x(i) <= 8e-8)
+           if rand() >= Prob
+               Vx(i) = - vth * cos(2*pi*randn());
+               if x(i) + dt*Vx(i) >= 8e-8
+                   Vx(i) = -Vx(i);
+               end
+           else
+                Vx(i) = -Vx(i);
+           end
+       end
+       
+       %right side of the boxes
+       if ((y(i) <= 4e-8 || y(i) >= 6e-8) && x(i)+dt*Vx(i) <= 12e-8 && x(i) >= 12e-8) 
+           if rand() >= Prob
+               Vx(i) = - vth * cos(2*pi*randn());
+               if x(i) + dt*Vx(i) <= 12e-8
+                   Vx(i) = -Vx(i);
+               end
+           else
+               Vx(i) = -Vx(i);
+           end
+       end
+       
+       %inbetween the two boxes
+       if ((y(i)+dt*Vy(i) >= 6e-8 || y(i)+dt*Vy(i) <= 4e-8) && x(i) <= 12e-8 && x(i) >= 8e-8)
+           if rand() >= Prob
+               Vy(i) = vth * sin(2*pi*randn());
+               if y(i) + dt*Vy(i) >= 6e-8 || y(i) + dt*Vy(i) <= 4e-8
+                   Vy(i) = -Vy(i);
+               end
+           else
+                Vy(i) = - Vy(i);
+           end
        end
        
        %implement scattering here, the velocity is re-thermalized
@@ -179,6 +241,9 @@ while t < TStop                     %Loop to calcualte pos, and temp
     pause(0.00001);
     t = t + dt;
     hold on;
+    subplot(2,1,1);
+    rectangle('Position', [wallX 0 4e-8 4e-8]);
+    rectangle('Position', [wallX wallH2 4e-8 4e-8]);
 end
 
 
