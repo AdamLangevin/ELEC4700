@@ -1,7 +1,7 @@
 clearvars
 
-L = 60;
-W = (2*L/3);
+L = 60;                     % Y-direction
+W = (2*L/3);                % X-direction
 
 G = sparse(L*W,L*W);
 
@@ -23,6 +23,7 @@ for j = 1:L
             
         elseif i == W       % right side
             G(n,:) = 0;
+            B(n) = 0;
             %G(n,n) = V0;
             
         elseif j == 1       % top
@@ -32,6 +33,7 @@ for j = 1:L
             
             G(n,:) = 0;
             %G(n,n) = V0;
+            B(n) = (G(n,nyn) - G(n,n))/2.0;
         elseif j == L       % bottom
             nxp = i + (j-2)*W;
             nxn = i + j*W;
@@ -39,6 +41,7 @@ for j = 1:L
             
             G(n,:) = 0;
             %G(n,n) = V0;
+            B(n) = (G(n,nyp) - G(n,n))/2.0;
         else                % interrior
             nxp = i + (j-2)*W;
             nxn = i + j*W;
