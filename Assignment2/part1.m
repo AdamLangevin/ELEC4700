@@ -20,7 +20,7 @@ end
 
 figure(2);
 for i=1:length(X)
-    voltage1D(X(i),1);
+    voltageFeild(X(i),X(i),1,0);
     subplot(4,3,i);
     plot(x,V2);
     title(['1-D potential at ',num2str(X(i)), ' points']);

@@ -1,10 +1,9 @@
 function [] = voltage1D(width, initialBC)
 
-global V2;
+global V2 G;
 global x;
 
 nx = width;
-diff = 1/nx;
 V0 = initialBC;
 
 V2 = zeros(nx,1);
@@ -18,7 +17,7 @@ for i = 1:nx
     else 
         G(i,i) = -2;
         G(i,i+1) = 1;
-        G(i+1,1) = 1;
+        G(i+1,i) = 1;
     end  
 end
 
