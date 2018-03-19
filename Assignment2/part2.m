@@ -31,12 +31,12 @@ Currents = zeros(length(X),1);
 
 for i = 1:length(X)
    voltageFeild2(X(i), X(i), 1, 0.2*X(i), 0.2*X(i), 0.01, 1);
-   figure(1);
-   subplot(4,4,i);
-   mesh(x,y,V2);
-   
    
    if extras
+       figure(1);
+       subplot(4,4,i);
+       mesh(x,y,V2);
+   
        figure(2);
        subplot(3,3,i);
        mesh(x,y,C);
@@ -73,16 +73,16 @@ W = [nx*0.1 nx*0.15 nx*0.2 nx*0.25 nx*0.3 nx*0.35 nx*0.4 nx*0.45 nx*0.5 nx*0.55 
 Currents = zeros(length(W),1);
 
 for i = 1:length(W)
-   voltageFeild2(nx, nx, 1, W(i), nx-W(i), 0.01, 1);
-   figure(7);
-   subplot(4,5,i);
-   mesh(x,y,V2);
-   
-   figure(8);
-   subplot(4,5,i);
-   mesh(x,y,C);
-   
+   voltageFeild2(nx, nx, 1, W(i), 40, 0.01, 1);
    if extras
+       figure(7);
+       subplot(4,5,i);
+       mesh(x,y,V2);
+
+       figure(8);
+       subplot(4,5,i);
+       mesh(x,y,C);
+   
        figure(9);
        subplot(4,5,i);
        mesh(x,y,Ex);
@@ -93,12 +93,13 @@ for i = 1:length(W)
        figure(11);
        subplot(4,5,i);
        quiver(x,y,Ex',Ey');
+        
+       figure(12);
+       subplot(4,5,i);
+       quiver(x,y,Jx',Jy');
+   
    end
-   
-   figure(12);
-   subplot(4,5,i);
-   quiver(x,y,Jx',Jy');
-   
+  
    Currents(i) = curr;
 end
 widthC = Currents;
@@ -108,21 +109,21 @@ plot(W,widthC);
 avgWC = sum(widthC)/length(W);
 fprintf('the average current for the chaning width: %g\n', avgWC);
 
-% part c
+% part d
 C1 = logspace(-4,0,20);
 Currents = zeros(length(C1),1);
 
 for i=1:length(C1)
    voltageFeild2(nx, nx, 1, 40, 40, C1(i), 1);
-   figure(13);
-   subplot(4,5,i);
-   mesh(x,y,V2);
-   
-   figure(14);
-   subplot(4,5,i);
-   mesh(x,y,C);
-   
    if extras 
+       figure(13);
+       subplot(4,5,i);
+       mesh(x,y,V2);
+
+       figure(14);
+       subplot(4,5,i);
+       mesh(x,y,C);
+   
        figure(15);
        subplot(4,5,i);
        mesh(x,y,Ex);
@@ -133,11 +134,11 @@ for i=1:length(C1)
        figure(17);
        subplot(4,5,i);
        quiver(x,y,Ex',Ey');
+        
+       figure(18);
+       subplot(4,5,i);
+       quiver(x,y,Jx',Jy');
    end
-
-   figure(18);
-   subplot(4,5,i);
-   quiver(x,y,Jx',Jy');
    
    Currents(i) = curr;
 end

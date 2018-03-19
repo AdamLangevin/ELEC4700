@@ -5,8 +5,8 @@ global x;
 global y;
 global Ex Ey Jx Jy C B curr;
 
-Lx = 1.5;
-Ly = 1;
+Lx = 1;
+Ly = 1.5;
 nx = width;
 ny = length;
 x = linspace(0,Lx,nx);

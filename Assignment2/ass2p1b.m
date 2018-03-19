@@ -1,10 +1,10 @@
 clearvars
 
-nx = 30;
+nx = 100;
 ny = nx*3/2;
 a = 1;
-b = 2;
-numSims = 30;
+b = 1.5;
+numSims = 21;
 V0 = 1;
 V = zeros(nx,ny);
 Vp = zeros(nx,ny);
@@ -19,7 +19,7 @@ for n = 1:2:numSims
             if X(i) == -b/2
                 V(i,j) = 1;
             elseif X(i) == b/2
-                V(i,j) =1;
+                V(i,j) = 1;
             elseif Y(j) == 0
                 V(i,j) = 0;
             elseif Y(j) == a
