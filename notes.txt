@@ -1,0 +1,17 @@
+- The exam will test the approach that we take to tackle problems
+- MD - calculate potential between two forces
+- MC - calculating average of the probability of the representative process
+  |- look at PA 3, might be useful
+- FD/Harmincs - look at the equation, make sure to know how to get mesh eqns
+- SCE/TI - solve down to eigin value problem
+- Transport - charge change equations/Jn/Jp, FD solutions
+- YEE Cell - know how to build it, where the E vec is described by the curl of the mag eqns
+  |- Propegation in 3D --> develops eigin value problem
+- MNA - use FD for Cap values. 
+- Compact models - looking at how to build SPICE models, looking more for how to make it rather than what it is
+- know eqns: diffusion/wave/MNA/IV
+
+- compact models - nonlinear needs jacobian, and use newton-rpahson 
+- MD fundamental parameter - Lenard jones funct
+- MC  "  " - probaility
+
